@@ -5,6 +5,7 @@ using Collections.Pooled;
 using JobScheduler;
 using ArchArrayExtensions = Arch.Core.Extensions.Internal.ArrayExtensions;
 using Component = Arch.Core.Utils.Component;
+using Arch.Core.Extensions;
 
 namespace Arch.Core;
 
@@ -303,6 +304,12 @@ public partial class World : IDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Destroy(Entity entity)
     {
+        var types = entity.GetComponentTypes();
+        foreach (var type in types)
+        {
+            OnComponentRemoved(entity, type);
+        }
+
         OnEntityDestroyed(entity);
 
         // Remove from archetype

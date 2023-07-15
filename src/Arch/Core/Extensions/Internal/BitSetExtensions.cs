@@ -7,7 +7,7 @@ namespace Arch.Core.Extensions.Internal;
 ///     The <see cref="BitSetExtensions"/> class
 ///     adds several extension methods to the <see cref="BitSet"/> class.
 /// </summary>
-internal static class BitSetExtensions
+public static class BitSetExtensions
 {
     // NOTE: Should this be in `TypeExtensions`?
     /// <summary>
@@ -16,7 +16,7 @@ internal static class BitSetExtensions
     /// <param name="types">The array of <see cref="ComponentType"/>'s.</param>
     /// <returns>Their newly created <see cref="BitSet"/>.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static BitSet ToBitSet(this ComponentType[] types)
+    public static BitSet ToBitSet(this ComponentType[] types)
     {
         if (types.Length == 0)
         {
