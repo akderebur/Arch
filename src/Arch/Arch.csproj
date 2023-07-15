@@ -12,9 +12,9 @@
 
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
 
-    <PackageId>Arch</PackageId>
+    <PackageId>ABEngine.Arch</PackageId>
     <Title>Arch</Title>
-    <Version>1.2.5.3-alpha</Version>
+    <Version>1.2.5.7-alpha</Version>
     <Authors>genaray</Authors>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <Description>A high performance c# net.6 and net.7 archetype based ECS ( Entity component system ).</Description>
