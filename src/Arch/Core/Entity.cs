@@ -5,7 +5,6 @@ using Arch.Core.Utils;
 
 namespace Arch.Core;
 
-
 #if PURE_ECS
 
 /// <summary>
@@ -13,7 +12,7 @@ namespace Arch.Core;
 ///     represents a general-purpose object and can be assigned a set of components that act as data.
 /// </summary>
 [SkipLocalsInit]
-public readonly struct Entity : IEquatable<Entity>
+public readonly struct Entity : IEquatable<Entity>, IComparable<Entity>
 {
     /// <summary>
     ///     Its Id, unique in its <see cref="World"/>.
@@ -56,6 +55,18 @@ public readonly struct Entity : IEquatable<Entity>
     public override bool Equals(object? obj)
     {
         return obj is Entity other && Equals(other);
+    }
+
+    /// <summary>
+    ///     Compares this <see cref="Entity"/> instace to another one for sorting and ordering.
+    ///     <remarks>Orders them by id. Ascending.</remarks>
+    /// </summary>
+    /// <param name="other">The other <see cref="Entity"/>.</param>
+    /// <returns>A int indicating their order.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public int CompareTo(Entity other)
+    {
+        return Id.CompareTo(other.Id);
     }
 
     /// <summary>
@@ -115,7 +126,7 @@ public readonly struct Entity : IEquatable<Entity>
 /// </summary>
 [DebuggerTypeProxy(typeof(EntityDebugView))]
 [SkipLocalsInit]
-public readonly struct Entity : IEquatable<Entity>
+public readonly struct Entity : IEquatable<Entity>, IComparable<Entity>
 {
     /// <summary>
     ///      Its Id, unique in its <see cref="World"/>.
@@ -130,7 +141,7 @@ public readonly struct Entity : IEquatable<Entity>
     /// <summary>
     ///     A null <see cref="Entity"/> used for comparison.
     /// </summary>
-    public static Entity Null = new(-1, 0);
+    public readonly static Entity Null = new(-1, 0);
 
     /// <summary>
     ///     Initializes a new instance of the <see cref="Entity"/> struct with default values.
@@ -170,9 +181,21 @@ public readonly struct Entity : IEquatable<Entity>
     /// <param name="obj">The other <see cref="Entity"/> object.</param>
     /// <returns>True if equal, false if not.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         return obj is Entity other && Equals(other);
+    }
+
+    /// <summary>
+    ///     Compares this <see cref="Entity"/> instace to another one for sorting and ordering.
+    ///     <remarks>Orders them by id and world. Ascending.</remarks>
+    /// </summary>
+    /// <param name="other">The other <see cref="Entity"/>.</param>
+    /// <returns>A int indicating their order.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public int CompareTo(Entity other)
+    {
+        return WorldId != other.WorldId ? WorldId.CompareTo(other.WorldId) : Id.CompareTo(other.Id);
     }
 
     /// <summary>
@@ -303,7 +326,6 @@ public readonly struct EntityReference
         return this == reference;
     }
 #endif
-
 
     /// <summary>
     ///     Checks the <see cref="EntityReference"/> for equality with another one.

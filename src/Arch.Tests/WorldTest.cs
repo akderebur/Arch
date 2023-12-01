@@ -12,7 +12,7 @@ namespace Arch.Tests;
 ///     tests basic <see cref="World"/> operations.
 /// </summary>
 [TestFixture]
-public partial class WorldTest
+public sealed partial class WorldTest
 {
     private World _world;
 
@@ -53,7 +53,7 @@ public partial class WorldTest
         var secondWorld = World.Create();
         That(secondWorld.Id, Is.EqualTo(firstWorld.Id));
     }
-    
+
     /// <summary>
     ///     Checks if the <see cref="World"/> creates <see cref="Entity"/> correctly.
     /// </summary>
@@ -101,8 +101,38 @@ public partial class WorldTest
         }
 
         That(_world.Size, Is.EqualTo(0));
-        That(_world.Archetypes[0].Size, Is.EqualTo(1));
-        That(_world.Archetypes[1].Size, Is.EqualTo(1));
+        That(_world.Archetypes[0].ChunkCount, Is.EqualTo(1));
+        That(_world.Archetypes[1].ChunkCount, Is.EqualTo(1));
+    }
+
+    /// <summary>
+    ///     Tests an edge case where entities are being bulk moved between archetypes and destroyed at the same time.
+    /// </summary>
+    [Test]
+    public void DestroyEdgeCase()
+    {
+        var entitiesToChangeColor = new QueryDescription().WithAll<Transform>();
+        var entities = new List<Entity>();
+        for (var i = 0; i < 1000; i++)
+        {
+            var ent = _world.Create(_entityGroup);
+            entities.Add(ent);
+        }
+
+        for (var i = 8; i < entities.Count; i++)
+        {
+            var ent = entities[i];
+            if (i % 3 != 0)
+            {
+                continue;
+            }
+
+            // A demonstration of bulk adding and removing components.
+            _world.Add(in entitiesToChangeColor, 1);
+            _world.Remove<int>(in entitiesToChangeColor);
+
+            _world.Destroy(ent);
+        }
     }
 
     /// <summary>
@@ -120,7 +150,7 @@ public partial class WorldTest
         var newEntity = localWorld.Create(_entityGroup);
 
         That(recycledEntity.Id, Is.EqualTo(entity.Id));           // Id was recycled
-        That(localWorld.Version(recycledEntity), Is.EqualTo(1));  // Version was increased
+        That(localWorld.Version(recycledEntity), Is.EqualTo(2));  // Version was increased
         That(newEntity.Id, Is.Not.EqualTo(recycledEntity.Id));
     }
 
@@ -228,10 +258,10 @@ public partial class WorldTest
             world.Create<HeavyComponent>();
         }
 
-        // Destroy half of the world entities
+        // Destroy all but one
         var counter = 0;
         var query = new QueryDescription().WithAll<HeavyComponent>();
-        world.Query(in query, (in Entity entity) =>
+        world.Query(in query, (Entity entity) =>
         {
             if (counter < amount - 1)
             {
@@ -246,8 +276,35 @@ public partial class WorldTest
         var archetype = world.Archetypes[0];
         That(world.Size, Is.EqualTo(1));
         That(world.Capacity, Is.EqualTo(archetype.EntitiesPerChunk));
-        That(archetype.Size, Is.EqualTo(1));
-        That(archetype.Capacity, Is.EqualTo(1));
+        That(archetype.ChunkCount, Is.EqualTo(1));
+        That(archetype.ChunkCapacity, Is.EqualTo(1));
+    }
+
+    /// <summary>
+    ///     Checks if the <see cref="World"/> trims its archetypes correctly and removes them when empty.
+    /// </summary>
+    [Test]
+    public void TrimExcessEmptyArchetypes()
+    {
+        // Fill world
+        var amount = 10000;
+        using var world = World.Create();
+        for (int index = 0; index < amount; index++)
+        {
+            world.Create<int>();
+            world.Create<byte>();
+        }
+
+        // Destroy all of the world entities
+        var query = new QueryDescription().WithAll<int>();
+        world.Destroy(query);
+
+        // Trim
+        world.TrimExcess();
+
+        var archetype = world.Archetypes[0];
+        That(world.Archetypes.Count, Is.EqualTo(1));
+        That(world.Capacity, Is.EqualTo(archetype.ChunkCount * archetype.EntitiesPerChunk));
     }
 
     /// <summary>
@@ -490,7 +547,7 @@ public partial class WorldTest
         _world.Remove<Transform>(entity2);
 
         That(_world.GetArchetype(entity2), Is.EqualTo(_world.GetArchetype(entity)));
-        That(_world.GetArchetype(entity).Size, Is.EqualTo(1));
+        That(_world.GetArchetype(entity).ChunkCount, Is.EqualTo(1));
         That(_world.GetArchetype(entity).Chunks[0].Size, Is.EqualTo(2));
     }
 
@@ -544,7 +601,7 @@ public partial class WorldTest
         _world.RemoveRange(entity2, typeof(Transform));
 
         That(_world.GetArchetype(entity2), Is.EqualTo(_world.GetArchetype(entity)));
-        That(_world.GetArchetype(entity).Size, Is.EqualTo(1));
+        That(_world.GetArchetype(entity).ChunkCount, Is.EqualTo(1));
         That(_world.GetArchetype(entity).Chunks[0].Size, Is.EqualTo(2));
     }
 
@@ -614,7 +671,7 @@ public partial class WorldTest
         _world.Remove<Rotation, Ai>(entity2);
 
         That(_world.GetArchetype(entity2), Is.EqualTo(_world.GetArchetype(entity)));
-        That(_world.GetArchetype(entity).Size, Is.EqualTo(1));
+        That(_world.GetArchetype(entity).ChunkCount, Is.EqualTo(1));
         That(_world.GetArchetype(entity).Chunks[0].Size, Is.EqualTo(2));
     }
 

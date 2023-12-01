@@ -44,7 +44,7 @@ public partial struct Chunk
         for (var index = 0; index < types.Length; index++)
         {
             var type = types[index];
-            Components[index] = Array.CreateInstance(type, Capacity);
+            Components[index] = ArrayRegistry.GetArray(type, Capacity);
         }
     }
 
@@ -116,7 +116,7 @@ public partial struct Chunk
     public bool Has<T>()
     {
         var id = Component<T>.ComponentType.Id;
-        return id < ComponentIdToArrayIndex.Length && ComponentIdToArrayIndex[id] != 1;
+        return id < ComponentIdToArrayIndex.Length && ComponentIdToArrayIndex[id] != -1;
     }
 
     /// <summary>
@@ -328,7 +328,7 @@ public partial struct Chunk
     /// <returns>A component casted to an <see cref="object"/>.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [Pure]
-    public object Get(int index, ComponentType type)
+    public object? Get(int index, ComponentType type)
     {
         var array = GetArray(type);
         return array.GetValue(index);
