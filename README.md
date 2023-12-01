@@ -10,12 +10,12 @@ A high-performance C# based Archetype & Chunks [Entity Component System](https:/
 - 🚀🚀 **_FASTER_** > Arch is on average quite faster than other ECS implemented in C#. Check out this [Benchmark](https://github.com/Doraku/Ecs.CSharp.Benchmark)!
 - 🤏 **_BARE MINIMUM_** >  Not bloated, it's small and only provides the essentials for you! 
 - ☕️ **_SIMPLE_** >  Promotes a clean, minimal, and self-explanatory API that is simple by design. Check out the [Wiki](https://github.com/genaray/Arch/wiki)!
-- 💪 _**MAINTAINED**_ > It's actively being worked on, maintained, and supported! 
-- 🚢 _**SUPPORT**_ > Supports .NetStandard 2.1, .Net Core 6 and 7 and therefore you may use it with Unity or Godot!
+- 💪 _**MAINTAINED**_ > It's actively being worked on, maintained, and comes along several [Extensions](https://github.com/genaray/Arch.Extended)! 
+- 🚢 _**SUPPORT**_ > Supports .NetStandard 2.1, .Net Core 6 and 7, and therefore you may use it with Unity or Godot!
 
 Download the [package](https://github.com/genaray/Arch/packages/1697222), get started today and join the [Discord](https://discord.gg/htc8tX3NxZ)!
 ```console
-dotnet add PROJECT package Arch --version 1.2.5
+dotnet add PROJECT package Arch --version 1.2.7.1-alpha
 ```
 
 # Code Sample
@@ -28,7 +28,7 @@ It's not! Arch does everything for you, you only need to define the entities and
 public struct Position{ float X, Y };
 public struct Velocity{ float Dx, Dy };
 
-public class Game 
+public sealed class Game 
 {
     public static void Main(string[] args) 
     {     
@@ -143,7 +143,7 @@ var query = new QueryDescription().
             WithNone<AI>();                    // Should have none of those
 
 // Execute the query
-world.Query(in query, (in Entity entity) => { /* Do something */ });
+world.Query(in query, (Entity entity) => { /* Do something */ });
 
 // Execute the query and modify components in the same step, up to 10 generic components at the same time. 
 world.Query(in query, (ref Position pos, ref Velocity vel) => {
@@ -183,6 +183,8 @@ There's more to explore, for example...
 
 Arch has some extensions that add more features and tools. Among them for example : 
 - 🛠️ **_[Arch.Extended](https://github.com/genaray/Arch.Extended)_** >  Adds a set of tools and features to save boilerplate code!
+- 🔎 *_[Godot Entity Debugger](https://github.com/RoadTurtleGames/ArchGodotEntityDebugger)_* > An Arch Entity debugger for the Godot engine!
+- 🔎 *_[Stride Entity Debugger](https://github.com/Doprez/stride-arch-ecs)_* > An example of Arch in the Stride engine, with additional entity and system inspector!
 - ❓ **_Your Tool-Library?_** > If you develop more tools and features for Arch, let us know and we'll list them here!
 
 # Performance
@@ -228,6 +230,9 @@ The following performance was achieved with Arch for the scenario under heavy lo
 Arch is already used in some projects, for a more detailed look, take a look at the wiki!
 > https://github.com/genaray/Arch/wiki/Projects-using-Arch
 
+## [Space Station 14](https://spacestation14.io/)
+Space Station 14 is inspired by the cult classic Space Station 13 and tells the extraordinary story of everything that can go wrong on a shift at a space station. You take on a role and complete your tasks so that the space station doesn't go to the dogs... or do the exact opposite. Prepare yourself for chaos and the finest roleplay. Best of all, SS14 is open-source and anyone can play!
+
 ## [Roguelite-Survivor](https://github.com/proc-gen/roguelite-survivor)
 An action-packed c# clone of the hit "vampire survivor" based on monogame and arch!
 Fight your way through hordes of different enemies, level up your character, collect permanent items and explore various maps!
@@ -235,5 +240,3 @@ Try it out!
 
 ## [EquilibriumEngine-CSharp](https://github.com/clibequilibrium/EquilibriumEngine-CSharp)
 Equilibrium Engine is a data-oriented C# game engine that takes advantage of ECS pattern followed by Hot-Reloading of your libraries which allows you to quickly iterate on different aspects of your projects.
-
-![Equilibrium Engine screenshot](https://raw.githubusercontent.com/clibequilibrium/EquilibriumEngine-CSharp/master/docs/home.png)
