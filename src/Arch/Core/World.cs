@@ -6,7 +6,6 @@ using Arch.Core.Utils;
 using Collections.Pooled;
 using Schedulers;
 using Component = Arch.Core.Utils.Component;
-using Arch.Core.Extensions;
 
 namespace Arch.Core;
 
